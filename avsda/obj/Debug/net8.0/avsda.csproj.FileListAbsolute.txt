@@ -1,0 +1,14 @@
+/Users/aisirotin/Desktop/avsda/avsda/bin/Debug/net8.0/avsda
+/Users/aisirotin/Desktop/avsda/avsda/bin/Debug/net8.0/avsda.deps.json
+/Users/aisirotin/Desktop/avsda/avsda/bin/Debug/net8.0/avsda.runtimeconfig.json
+/Users/aisirotin/Desktop/avsda/avsda/bin/Debug/net8.0/avsda.dll
+/Users/aisirotin/Desktop/avsda/avsda/bin/Debug/net8.0/avsda.pdb
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.GeneratedMSBuildEditorConfig.editorconfig
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.AssemblyInfoInputs.cache
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.AssemblyInfo.cs
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.csproj.CoreCompileInputs.cache
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.dll
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/refint/avsda.dll
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.pdb
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.genruntimeconfig.cache
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/ref/avsda.dll
