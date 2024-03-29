@@ -12,3 +12,4 @@
 /Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.pdb
 /Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.genruntimeconfig.cache
 /Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/ref/avsda.dll
+/Users/aisirotin/Desktop/avsda/avsda/obj/Debug/net8.0/avsda.sourcelink.json

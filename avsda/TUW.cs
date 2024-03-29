@@ -1,6 +1,6 @@
 namespace avsda;
 
-abstract class TUW
+public abstract class TUW
 {
     public string Name { get; set; }
     public int Id { get; protected set; }
@@ -9,7 +9,7 @@ abstract class TUW
 
 }
 
-class T : TUW
+class T : TUW 
 {
 
     private static int nextId = 1;

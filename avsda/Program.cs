@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using avsda;
+namespace avsda;
 
-public class Node<T>
-{
-    
-}
-public class TreeNode<T>
+public class TreeNode<T> where T : TUW
 {
     public T Data { get; set; }
     public int Id { get; set; }
@@ -47,66 +43,118 @@ public class TreeNode<T>
             child.TraverseDepthFirst(action, level + 1);
         }
     }
-    // Метод для вставки элемента как child элементу с соответствующим Id
+}
+
+
+
+public class Tree<T> where T : TUW
+{
+    private TUW t;
+    
+    public TreeNode<T> Root { get; set; }
+    
+    public Tree()
+    {
+        Root = null;
+    }
+
+    public Tree(T root)
+    {
+        
+        Root = new TreeNode<T>(root);
+    }
+
     public void Insert(T element, int parentId)
     {
-        foreach (var child in Children)
+        
+        if (Root == null)
         {
-            if (child.Id == parentId)
-            {
-                child.AddChild(new TreeNode<T>(element));
-                return;
-            }
-            child.Insert(element, parentId); // Рекурсивно ищем узел для вставки в дочерних узлах
+            Root = new TreeNode<T>(element);
+        }
+
+        Insert(element, parentId, Root);
+    }
+
+    private void Insert(T element, int parentId, TreeNode<T> node)
+    {
+        
+        if (node.Id == parentId && element.CanInsert(GetItem(parentId)))
+        {
+            node.AddChild(new TreeNode<T>(element));
+            return;
+        }
+
+        foreach (var child in node.Children)
+        {
+            Insert(element, parentId, child);
         }
     }
+
     public void InsertUnique(T element, int parentId)
     {
-        foreach (var child in Children)
+        if (Root == null)
         {
-            if (child.Id == parentId)
+            Root = new TreeNode<T>(element);
+        }
+
+        InsertUnique(element, parentId, Root);
+    }
+
+    private void InsertUnique(T element, int parentId, TreeNode<T> node)
+    {
+        if (node.Id == parentId && element.CanInsert(GetItem(parentId)))
+        {
+            if (!node.Children.Exists(n => EqualityComparer<T>.Default.Equals(n.Data, element)))
             {
-                bool alreadyExists = false;
-                foreach (var node in child.Children)
-                {
-                    if (node.Data.Equals(element))
-                    {
-                        alreadyExists = true;
-                        break;
-                    }
-                }
-                if (!alreadyExists)
-                {
-                    child.AddChild(new TreeNode<T>(element));
-                }
-                return;
+                node.AddChild(new TreeNode<T>(element));
             }
-            child.InsertUnique(element, parentId);
+            return;
+        }
+
+        foreach (var child in node.Children)
+        {
+            InsertUnique(element, parentId, child);
         }
     }
 
     public bool Delete(T element)
     {
-        foreach (var child in Children)
+        if (Root == null)
         {
-            if (child.Data.Equals(element))
+            return false;
+        }
+
+        if (EqualityComparer<T>.Default.Equals(Root.Data, element))
+        {
+            Root = null;
+            return true;
+        }
+
+        return Delete(element, Root);
+    }
+
+    private bool Delete(T element, TreeNode<T> node)
+    {
+        for (int i = 0; i < node.Children.Count; i++)
+        {
+            if (EqualityComparer<T>.Default.Equals(node.Children[i].Data, element))
             {
-                Children.Remove(child);
+                node.Children.RemoveAt(i);
                 return true;
             }
-            if (child.Delete(element))
+            if (Delete(element, node.Children[i]))
             {
                 return true;
             }
         }
         return false;
     }
-    
+
     public void Clear()
     {
-        Children.Clear();
+        Root = null;
     }
-    
+
     public List<T> ItemsByLevel(int level)
     {
         List<T> items = new List<T>();
@@ -119,179 +167,167 @@ public class TreeNode<T>
         });
         return items;
     }
-    
+
     public int IdOf(T element)
     {
         Queue<TreeNode<T>> queue = new Queue<TreeNode<T>>();
-        queue.Enqueue(this);
-
-        while (queue.Count > 0)
+        if (Root != null)
         {
-            TreeNode<T> current = queue.Dequeue();
+            queue.Enqueue(Root);
 
-            if (EqualityComparer<T>.Default.Equals(current.Data, element))
+            while (queue.Count > 0)
             {
-                return current.Id;
-            }
+                TreeNode<T> current = queue.Dequeue();
 
-            foreach (var child in current.Children)
-            {
-                queue.Enqueue(child);
+                // Проверяем, равен ли текущий элемент элементу, переданному в качестве параметра
+                if (EqualityComparer<T>.Default.Equals(current.Data, element))
+                {
+                    return current.Id;
+                }
+
+                foreach (var child in current.Children)
+                {
+                    queue.Enqueue(child);
+                }
             }
         }
-
         return -1;
     }
+
 
     
     public void PrintTree()
     {
-        TraverseDepthFirst((data, level) =>
+        if (Root != null)
         {
-            string indentation = new string(' ', level * 2);
-            Console.WriteLine(indentation + data);
-        });
+            PrintTree(Root, 0);
+        }
     }
-    
+
+    private void PrintTree(TreeNode<T> node, int level)
+    {
+        string indentation = new string(' ', level * 2);
+        Console.WriteLine(indentation + node.Data);
+        foreach (var child in node.Children)
+        {
+            PrintTree(child, level + 1);
+        }
+    }
+
     public List<T> GetItems<T>()
     {
         List<T> items = new List<T>();
-        TraverseDepthFirst((data, _) =>
+        if (Root != null)
         {
-            if (data is T)
+            TraverseDepthFirst((data, _) =>
             {
-                items.Add((T)(object)data);
-            }
-        });
+                if (data is T)
+                {
+                    items.Add((T)(object)data);
+                }
+            });
+        }
         return items;
     }
-    
-    
 
+    private void TraverseDepthFirst(Action<T, int> action, TreeNode<T> node = null, int level = 0)
+    {
+        if (node == null)
+        {
+            node = Root;
+        }
+
+        action(node.Data, level);
+        foreach (var child in node.Children)
+        {
+            TraverseDepthFirst(action, child, level + 1);
+        }
+    }
+    
+    public T GetItem(int id)
+    {
+        return FindItemById(Root, id);
+    }
+
+    private T FindItemById(TreeNode<T> node, int id)
+    {
+        if (node == null)
+            return null;
+
+        if (node.Id == id)
+            return node.Data;
+
+        foreach (var child in node.Children)
+        {
+            var result = FindItemById(child, id);
+            if (result != null)
+                return result;
+        }
+
+        return null;
+    }
+    
 }
+
+
 
 class Program
 {
     static void Main(string[] args)
     {
-        // TreeNode<string> root = new TreeNode<string>("Root");
-        // TreeNode<string> child1 = new TreeNode<string>("Child1");
-        // TreeNode<string> child2 = new TreeNode<string>("Child2");
-        // TreeNode<string> child3 = new TreeNode<string>("Child3");
-        // TreeNode<string> grandChild1 = new TreeNode<string>("GrandChild1");
-        // TreeNode<string> grandChild2 = new TreeNode<string>("GrandChild2");
-        //
-        // root.AddChild(child1);
-        // root.AddChild(child2);
-        // root.AddChild(child3);
-        // child1.AddChild(grandChild1);
-        // child1.AddChild(grandChild2);
-        //
-        // // Получаем элементы на уровне 1 (индексация начинается с 0)
-        // List<string> itemsAtLevel1 = root.ItemsByLevel(1);
-        // Console.WriteLine("Items at level 1:");
-        // foreach (var item in itemsAtLevel1)
-        // {
-        //     Console.WriteLine(item);
-        // }
-        // int idOfChild1 = root.IdOf("Child2");
-        // Console.WriteLine("Id of 'Child1': " + idOfChild1);
-        //
-        // int idOfNonExisting = root.IdOf("NonExisting");
-        // Console.WriteLine("Id of 'NonExisting': " + idOfNonExisting);
-        // root.Insert("asdas", 2);
-        // root.PrintTree();
-        
-        
-        // TreeNode<object> root = new TreeNode<object>(10);
-        // TreeNode<object> child1 = new TreeNode<object>("Child1");
-        // TreeNode<object> child2 = new TreeNode<object>("Child2");
-        // TreeNode<object> child3 = new TreeNode<object>(20);
-        // TreeNode<object> grandChild1 = new TreeNode<object>(30);
-        // TreeNode<object> grandChild2 = new TreeNode<object>("GrandChild2");
-        //
-        // root.AddChild(child1);
-        // root.AddChild(child2);
-        // root.AddChild(child3);
-        // child1.AddChild(grandChild1);
-        // child1.AddChild(grandChild2);
-        //
-        // // Получаем все элементы типа string
-        // List<string> stringItems = root.GetItems<string>();
-        // Console.WriteLine("String items:");
-        // foreach (var item in stringItems)
-        // {
-        //     Console.WriteLine(item);
-        // }
-        //
-        // // Получаем все элементы типа int
-        // List<string> intItems = root.GetItems<string>();
-        // Console.WriteLine("Int items:");
-        // foreach (var item in intItems)
-        // {
-        //     Console.WriteLine(item);
-        // }
-        // root.PrintTree();
-
-
-
-        TUW t = new T("T");
-        TUW u1 = new U("U1");
+  
+        // тесты для tuw
+        TUW root = new T("Root");
         TUW t1 = new T("T1");
+        TUW u1 = new U("U1");
         TUW w1 = new W("W1");
-        TUW u2 = new U("U2");
+        TUW t2 = new T("T2");
         TUW w2 = new W("W2");
+        TUW u2 = new U("U2");
+
+        Tree<TUW> tree1 = new Tree<TUW>(root);
+        tree1.Insert(t1, 0);
+        tree1.Insert(u1,0);
+        tree1.Insert(w1, 0);
+        tree1.Insert(t2,1);
+        tree1.Insert(w2,1);
+        tree1.Insert(u2,2);
         
-        Console.WriteLine(t.CanInsert(u1));
+        // Печатаем дерево
+        Console.WriteLine("Tree:");
+        tree1.PrintTree();
         
-        
-        
-        
-        TreeNode<TUW> root1 = new TreeNode<TUW>(t);
-        TreeNode<TUW> Child1 = new TreeNode<TUW>(u1);
-        TreeNode<TUW> Child2 = new TreeNode<TUW>(t1);
-        TreeNode<TUW> Child3 = new TreeNode<TUW>(w1);
-        TreeNode<TUW> Grandchild1_1 = new TreeNode<TUW>(u2);
-        TreeNode<TUW> Grandchild1_2 = new TreeNode<TUW>(w2);
-        
-        root1.AddChild(Child1);
-        root1.AddChild(Child2);
-        root1.AddChild(Child3);
-        Child1.AddChild(Grandchild1_1);
-        Child1.AddChild(Grandchild1_2);
-        root1.Delete(u2);
-        root1.Insert(u2, 3);
-        root1.PrintTree();
-        
-        List<TUW> itemsAtLevel1 = root1.ItemsByLevel(1);
+        // Выводим Id элемента
+        Console.WriteLine("Id of w2: " + tree1.IdOf(w2));
         Console.WriteLine("Items at level 1:");
-        foreach (var item in itemsAtLevel1)
+        var items1 = tree1.ItemsByLevel(1);
+        foreach (var item in items1)
         {
             Console.WriteLine(item);
         }
-        // root1.Clear();
-        Console.WriteLine(root1.IdOf(w2));
         
-        List<T> stringItems = root1.GetItems<T>();
-        Console.WriteLine("String items:");
-        foreach (var item in stringItems)
+        
+        // Получаем элементы определенного типа
+        Console.WriteLine("Items of type string:");
+        var Items = tree1.GetItems<T>();
+        foreach (var item in Items)
         {
             Console.WriteLine(item);
         }
+
+        // Удаляем элемент
+        Console.WriteLine("Delete w2");
+        tree1.Delete(w2);
+        Console.WriteLine("Tree after deletion:");
+        tree1.PrintTree();
+
+        Console.WriteLine(tree1.GetItem(2).Name);
+
+        // Очищаем дерево
+        Console.WriteLine("Clear tree");
+        tree1.Clear();
+        Console.WriteLine("Tree after clearing:");
+        tree1.PrintTree();
     }
     
 }
-
-
-// public void Insert(T element, int parentId)
-// {
-//     foreach (var child in Children)
-//     {
-//         if (child.Id == parentId)
-//         {
-//             child.AddChild(new TreeNode<T>(element));
-//             return;
-//         }
-//         child.Insert(element, parentId); // Рекурсивно ищем узел для вставки в дочерних узлах
-//     }
-// }
