@@ -21,14 +21,7 @@ public class TreeNode<T> where T : TUW
     {
         Data = data;
     }
-
-    public TreeNode(TreeNode<T> node) : this(node.Data)
-    {
-        foreach (var child in node.Children)
-        {
-            Children.Add(new TreeNode<T>(child));
-        }
-    }
+    
 
     public void AddChild(TreeNode<T> child)
     {
@@ -60,9 +53,40 @@ public class Tree<T> where T : TUW
 
     public Tree(T root)
     {
-        
         Root = new TreeNode<T>(root);
     }
+    // Конструктор копирования
+ 
+    // Конструктор копирования
+    public Tree(Tree<T> other)
+    {
+        if (other == null || other.Root == null)
+        {
+            Root = null;
+            return;
+        }
+
+        Root = CopyNode(other.Root);
+    }
+
+    // Метод для копирования узла
+    private TreeNode<T> CopyNode(TreeNode<T> node)
+    {
+        if (node == null)
+            return null;
+
+        TreeNode<T> copiedNode = new TreeNode<T>(node.Data);
+
+        foreach (var child in node.Children)
+        {
+            copiedNode.Children.Add(CopyNode(child));
+        }
+
+        return copiedNode;
+    }
+    
+    
+    
 
     public void Insert(T element, int parentId)
     {
@@ -207,7 +231,7 @@ public class Tree<T> where T : TUW
     private void PrintTree(TreeNode<T> node, int level)
     {
         string indentation = new string(' ', level * 2);
-        Console.WriteLine(indentation + node.Data);
+        Console.WriteLine(indentation + node.Data.Name);
         foreach (var child in node.Children)
         {
             PrintTree(child, level + 1);
@@ -308,7 +332,7 @@ class Program
         
         
         // Получаем элементы определенного типа
-        Console.WriteLine("Items of type string:");
+        Console.WriteLine("Items of type T:");
         var Items = tree1.GetItems<T>();
         foreach (var item in Items)
         {
@@ -322,12 +346,14 @@ class Program
         tree1.PrintTree();
 
         Console.WriteLine(tree1.GetItem(2).Name);
-
+        Tree<TUW> tree2 = new Tree<TUW>(tree1);
         // Очищаем дерево
         Console.WriteLine("Clear tree");
         tree1.Clear();
         Console.WriteLine("Tree after clearing:");
-        tree1.PrintTree();
+        tree2.PrintTree();
+        
+        
     }
     
 }

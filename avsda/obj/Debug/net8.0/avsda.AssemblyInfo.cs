@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("avsda")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a05957b893ec9c2d9f52113221b0b3d9bb15a52")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5100a29cdd196bf5f0a384e56876f81b1a06e857")]
 [assembly: System.Reflection.AssemblyProductAttribute("avsda")]
 [assembly: System.Reflection.AssemblyTitleAttribute("avsda")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
