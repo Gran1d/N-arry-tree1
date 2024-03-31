@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 namespace avsda;
 
 public class TreeNode<T> where T : TUW
@@ -28,21 +29,13 @@ public class TreeNode<T> where T : TUW
         Children.Add(child);
     }
 
-    public void TraverseDepthFirst(Action<T, int> action, int level = 0)
-    {
-        action(Data, level);
-        foreach (var child in Children)
-        {
-            child.TraverseDepthFirst(action, level + 1);
-        }
-    }
+
 }
 
 
 
 public class Tree<T> where T : TUW
 {
-    private TUW t;
     
     public TreeNode<T> Root { get; set; }
     
@@ -55,9 +48,7 @@ public class Tree<T> where T : TUW
     {
         Root = new TreeNode<T>(root);
     }
-    // Конструктор копирования
- 
-    // Конструктор копирования
+    
     public Tree(Tree<T> other)
     {
         if (other == null || other.Root == null)
@@ -301,6 +292,10 @@ class Program
     {
   
         // тесты для tuw
+        Tree<TUW> test= new Tree<TUW>();
+        Debug.Assert(test.Root == null);
+        
+        
         TUW root = new T("Root");
         TUW t1 = new T("T1");
         TUW u1 = new U("U1");
@@ -308,26 +303,30 @@ class Program
         TUW t2 = new T("T2");
         TUW w2 = new W("W2");
         TUW u2 = new U("U2");
+        TUW u3 = new U("U3");
 
         Tree<TUW> tree1 = new Tree<TUW>(root);
+        Debug.Assert(tree1.Root != null);
         tree1.Insert(t1, 0);
         tree1.Insert(u1,0);
         tree1.Insert(w1, 0);
         tree1.Insert(t2,1);
         tree1.Insert(w2,1);
         tree1.Insert(u2,2);
+        tree1.InsertUnique(u3,3);
         
         // Печатаем дерево
         Console.WriteLine("Tree:");
         tree1.PrintTree();
         
         // Выводим Id элемента
+        Debug.Assert(tree1.IdOf(w2) == 4);
         Console.WriteLine("Id of w2: " + tree1.IdOf(w2));
         Console.WriteLine("Items at level 1:");
         var items1 = tree1.ItemsByLevel(1);
         foreach (var item in items1)
         {
-            Console.WriteLine(item);
+            Console.WriteLine(item.Name);
         }
         
         
@@ -336,6 +335,7 @@ class Program
         var Items = tree1.GetItems<T>();
         foreach (var item in Items)
         {
+            
             Console.WriteLine(item);
         }
 
@@ -345,6 +345,7 @@ class Program
         Console.WriteLine("Tree after deletion:");
         tree1.PrintTree();
 
+        Debug.Assert(tree1.GetItem(2).Name == "W1");
         Console.WriteLine(tree1.GetItem(2).Name);
         Tree<TUW> tree2 = new Tree<TUW>(tree1);
         // Очищаем дерево
@@ -352,6 +353,7 @@ class Program
         tree1.Clear();
         Console.WriteLine("Tree after clearing:");
         tree2.PrintTree();
+        
         
         
     }

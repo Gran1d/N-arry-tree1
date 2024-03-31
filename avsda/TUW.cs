@@ -13,6 +13,7 @@ class T : TUW
 {
 
     private static int nextId = 1;
+    public string color { get; set; }
 
     public T(string name)
     {
@@ -35,7 +36,7 @@ class U : TUW
 {
     
     private static int nextId = 1;
-
+    public int price { get; set; }
     public U(string name)
     {
         Name = name;
@@ -58,6 +59,7 @@ class W : TUW
 {
     
     private static int nextId = 1;
+    public string form { get; set; }
 
     public W(string name)
     {
